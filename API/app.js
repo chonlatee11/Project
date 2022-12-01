@@ -10,7 +10,7 @@ var mysql = require("mysql");
 const { json } = require('express');
 var poolCluster = mysql.createPoolCluster();
 poolCluster.add("node0", {
-  host: "localhost",
+  host: "192.168.1.2",
   port: "3306",
   database: "mymariaDB",
   user: "devchon",
@@ -18,43 +18,92 @@ poolCluster.add("node0", {
   charset: "utf8mb4",
 });
 
-app.post('/register', jsonParser,  function (req, res, next) {
+app.get('/getUser', jsonParser,  function (req, res, next) {
   poolCluster.getConnection(function (err, connection) {
 	if (err) {
 	  console.log(err);
 	} else {
-	  connection.query("CREATE TABLE `mymariaDB`.`Researcher` (`researcherID` INT NOT NULL AUTO_INCREMENT , `Email` TEXT NOT NULL , `passWord` TEXT NOT NULL , `fName` TEXT NOT NULL , `lName` TEXT NOT NULL, `phonNumber` VARCHAR(10) NOT NULL, PRIMARY KEY (`researcherID`)) ENGINE = InnoDB CHARSET=utf8mb3 COLLATE utf8mb3_general_ci;;", function (err, rows) {
+	  connection.query("SELECT * FROM User", function (err, rows) {
 		if (err) {
 		  res.json({err})
 		} else {
-		  connection.release();
-      res.json({rows})
+			res.json({rows})
+			// connection.end();
+			console.log(rows);
+		  	connection.release();
 		}
 	  });
 	}
   });
 })
 
-app.post('/inserttable', jsonParser,  function (req, res, next) {
-  poolCluster.getConnection(function (err, connection) {
-	if (err) {
-	  console.log(err);
-	} else {
-	  connection.query("INSERT INTO User (UserName, Password, fName, lName, PhoneNumber, Address) VALUES (?, ?, ?, ?, ?, ?);", 
-    [req.body.userName, req.body.passWord, req.body.fName, req.body.lName, req.body.phoneNumber, req.body.address] ,function (err, rows) {
+app.post('/addUser', jsonParser,  function (req, res, next) {
+	  poolCluster.getConnection(function (err, connection) {
 		if (err) {
-		  res.json({err})
-		} else {
-		  connection.release();
-      res.json({rows})
-		}
-	  });
-	}
-  });
-})
+			console.log(err);
+			}else {
+				connection.query("INSERT INTO User (UserName, Password, fName, lName, PhoneNumber, Address) VALUES (?, ?, ?, ?, ?, ?);", 
+				[req.body.userName, req.body.passWord, req.body.fName, req.body.lName, req.body.phoneNumber, req.body.address], function (err, rows) {
+					if (err) {
+						res.json({err})
+					} else {
+						res.json({rows})
+						connection.release();
+					}
+				});
+			  }
+			});
+		  })
+
+app.post('/login', jsonParser,  function (req, res, next) {
+	  poolCluster.getConnection(function (err, connection) {
+		if (err) {
+			console.log(err);
+			}else {
+				connection.query("SELECT * FROM User WHERE UserName = ? AND Password = ?;",
+				[req.body.userName, req.body.passWord], function (err, rows) {
+					if (err) {
+						res.json({err})
+					} else {
+						// console.log(req.body.userName);
+						// console.log(req.body.passWord);
+						if (rows.length == 0) {
+							res.json({data: "Not found"})
+							connection.release();
+						} else {
+							res.json({rows})
+							console.log(rows);
+							console.log(rows.length);
+							console.log(res.statusCode);
+							connection.release();
+						}
+						
+					}
+				});
+			}
+		});
+	})
+
+
+// app.post('/inserttable', jsonParser,  function (req, res, next) {
+//   poolCluster.getConnection(function (err, connection) {
+// 	if (err) {
+// 	  console.log(err);
+// 	} else {
+// 	  connection.query("INSERT INTO User (UserName, Password, fName, lName, PhoneNumber, Address) VALUES (?, ?, ?, ?, ?, ?);", 
+//     [req.body.userName, req.body.passWord, req.body.fName, req.body.lName, req.body.phoneNumber, req.body.address] ,function (err, rows) {
+// 		if (err) {
+// 		  res.json({err})
+// 		} else {
+// 		  connection.release();
+//       	res.json({rows})
+// 		  connection.end();
+// 		}
+// 	  });
+// 	}
+//   });
+// })
 
 app.listen(3030, function () {
   console.log('CORS-enabled web server listening on port 3030')
 })
-
-  
