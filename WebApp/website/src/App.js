@@ -1,4 +1,6 @@
-import FormComponent from './FormComponents/FormComponent';
+import FormComponent from './FormComponent.js';
+import React from 'react';
+
 
 function App() {
   return (

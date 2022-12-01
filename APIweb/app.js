@@ -4,6 +4,7 @@ var app = express()
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
 
+
 app.use(cors())
 
 var mysql = require("mysql");
@@ -22,7 +23,7 @@ app.listen(3030, function () {
 })
 
 
-app.post('/select', jsonParser,  function (req, res, next) {
+app.post('/login', jsonParser,  function (req, res, next) {
   poolCluster.getConnection(function (err, connection) {
     if (err) {
         console.log(err);
@@ -32,8 +33,8 @@ app.post('/select', jsonParser,  function (req, res, next) {
                 if (err) {
                     res.json({err})
                 } else {
-                    // console.log(req.body.userName);
-                    // console.log(req.body.passWord);
+                    //  console.log(req.body.userName);
+                    //  console.log(req.body.passWord);
                     if (rows.length == 0) {
                         res.json({data: "Not found"})
                         connection.release();
@@ -49,6 +50,27 @@ app.post('/select', jsonParser,  function (req, res, next) {
         }
     });
 })
+
+// app.post('/login', (req, res) => {
+//     const email = req.body.email;
+//     const password = req.body.password;
+
+//     poolCluster.query(
+//         "SELECT * FROM Admin WHERE email = ? AND password = ?",
+//         [email, password],
+//         (err, result) =>{
+//             if(err){
+//                 res.send({err: err})
+//             }
+
+//             if (result){
+//                     res.send(result);
+//             }else{
+//                     res.send({message: "Wrong email/password"});
+//             }
+//         }
+//     );
+// });
 
 // app.post('/insert',  jsonParser, function (req, res, next) {
 // poolCluster.getConnection(function (err, connection) {
