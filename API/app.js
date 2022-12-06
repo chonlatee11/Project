@@ -10,7 +10,7 @@ var mysql = require("mysql");
 const { json } = require('express');
 var poolCluster = mysql.createPoolCluster();
 poolCluster.add("node0", {
-  host: "192.168.1.2",
+  host: "192.168.1.22",
   port: "3306",
   database: "mymariaDB",
   user: "devchon",

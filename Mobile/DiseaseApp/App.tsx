@@ -1,22 +1,28 @@
-import React from "react";
-import { Provider as PaperProvider } from "react-native-paper";
-import { LoginScreen } from "./app/screens/login/login.screen";
-import { RegisterScreen } from "./app/screens/register/register.screen";
-import { HomeScreen }  from "./app/screens/home/home.screen";
-import { theme } from "./App.style";
-import AppNavigator from "./app/app.navigatior";
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow strict-local
+ */
 
-
-const App = () => {
-
-  return(
-    <PaperProvider theme={theme}>
-      <AppNavigator />
-      {/* <LoginScreen/ > */}
-      {/* <RegisterScreen/ > */}
-      {/* <HomeScreen/ > */}
-    </PaperProvider>
-  );
-};
-
-export default App;
+ import React from 'react';
+ import {SafeAreaView, StyleSheet, Text} from 'react-native';
+ import Navigation from './app/navigation/navigation';
+ 
+ const App = () => {
+   return (
+     <SafeAreaView style={styles.root}>
+       <Navigation />
+     </SafeAreaView>
+   );
+ };
+ 
+ const styles = StyleSheet.create({
+   root: {
+     flex: 1,
+     backgroundColor: '#F9FBFC',
+   },
+ });
+ 
+ export default App;
