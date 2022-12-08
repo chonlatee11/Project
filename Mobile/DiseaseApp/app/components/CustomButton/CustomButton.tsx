@@ -1,19 +1,19 @@
 import React from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 
-const CustomButton = ({onPress = {} as any | object, text = {} as any | String, type = {} as any | String, bgColor = {} as any | object, fgColor = ''}) => {
+const CustomButton = ({onPress = {} as any | object, text = {} as any | String, type = 'PRIMARY', bgColor = {} as any | object, fgColor = ''}) => {
   return (
     <Pressable
       onPress={onPress}
       style={[
         styles.container,
-        styles.container_PRIMARY,
-        bgColor ? {backgroundColor: bgColor} : {},
+        styles.container_SECONDARY,
+        bgColor ? {backgroundColor: '#3B71F3'} : {},
       ]}>
       <Text
         style={[
           styles.text,
-          styles.text_SECONDARY,
+          styles.text,
           fgColor ? {color: fgColor} : {},
         ]}>
         {text}

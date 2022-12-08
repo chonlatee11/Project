@@ -37,17 +37,17 @@ app.get('/getUser', jsonParser,  function (req, res, next) {
   });
 })
 
-app.post('/addUser', jsonParser,  function (req, res, next) {
+app.post('/register', jsonParser,  function (req, res, next) {
 	  poolCluster.getConnection(function (err, connection) {
 		if (err) {
 			console.log(err);
 			}else {
 				connection.query("INSERT INTO User (UserName, Password, fName, lName, PhoneNumber, Address) VALUES (?, ?, ?, ?, ?, ?);", 
-				[req.body.userName, req.body.passWord, req.body.fName, req.body.lName, req.body.phoneNumber, req.body.address], function (err, rows) {
+				[req.body.userName, req.body.passWord, req.body.fName, req.body.lName, req.body.phoneNumber, req.body.address], function (err) {
 					if (err) {
 						res.json({err})
 					} else {
-						res.json({rows})
+						res.json({"status" : "success"})
 						connection.release();
 					}
 				});
@@ -71,7 +71,7 @@ app.post('/login', jsonParser,  function (req, res, next) {
 							res.json({data: "Not found"})
 							connection.release();
 						} else {
-							res.json({rows})
+							res.json({status : "success"})
 							console.log(rows);
 							console.log(rows.length);
 							console.log(res.statusCode);

@@ -6,7 +6,9 @@ import {useNavigation} from '@react-navigation/core';
 import {useForm} from 'react-hook-form';
 
 const SignUpScreen = (props : any) => {
-  const {control, handleSubmit, formState: {errors}, watch} = useForm();
+  const {control, handleSubmit, formState: {errors}, watch} = useForm(
+    {defaultValues: {username: '', password: '', repeatPassword: '', fname: '', lname: '', phoneNumber: '', address: ''}},
+  );
   
   const onSignInPress = () => {
     props.navigation.navigate('SignIn');
@@ -97,7 +99,7 @@ const SignUpScreen = (props : any) => {
         
 
         <CustomButton
-          text="Have an account? Sign in"
+          text="เข้าสู่ระบบ"
           onPress={onSignInPress}
           type="TERTIARY"
         />
