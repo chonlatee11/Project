@@ -6,6 +6,7 @@ import React from 'react'
 const FormComponent = ()=>{
     const [email,setEmail] = useState('')
     const [password,setPassword] = useState('')
+    const [roleCheck, setRolecheck] = useState('')
 
     const [errorEmail, setErrorEmail] = useState('')
     const [errorPassword, setErrorPassword] = useState('')
@@ -14,8 +15,15 @@ const FormComponent = ()=>{
     const [passwordColor, setPasswordColor] = useState('')
     const [validForm , setValidForm] = useState(false);
 
-    
-
+//     function SignIn(){
+//     const handleSubmit = (event) => {
+//     event.preventDefault();
+//     const data = new FormData(event.currentTarget);
+//     const jsonData = {
+//         email: data.get('email'),
+//         password: data.get('password')
+//     }
+// }
 
     const validateForm = (e)=>{
         e.preventDefault()
@@ -38,24 +46,67 @@ const FormComponent = ()=>{
             setPasswordColor('red')
             setValidForm(false)
         }
-    }
-
-    const onLogin = () => {
-        if (validForm) {
-            const login = () => {
-                axios.post("http://localhost:3030/login",{
-                    email: email,
-                    password: password
-                }).then((response) => {
+        if(roleCheck === 'Admin'){
+            axios.post("http://localhost:3030/loginADMIN",{
+                email: email,
+                password: password
+            }).then((response) => {
+                console.log(response.data.status)
+                if(response.data.status === 'ok'){
+                    localStorage.setItem('token', response.token)
+                    window.location = '/AdminPage'
+                } else {
                     console.log(response.data)
-                });
-            };
-        }else{
-            return;
+                    return ;
+                }
+                //console.log(response.data)
+            })
         }
-        
+        if(roleCheck === 'Research'){
+            axios.post("http://localhost:3030/loginRESEARCH",{
+                email: email,
+                password: password
+            }).then((response) => {
+                console.log(response.data.status)
+                if(response.data.status === 'ok'){
+                    localStorage.setItem('token', response.token)
+                    //window.location = '/AdminPage'
+                } else {
+                    console.log(response.data)
+                    return ;
+                }
+                console.log(response.data)
+            })
+        }
+
     }
-    
+        function onLogin() {
+        const handleSubmit = (event) => {
+          event.preventDefault();
+          const data = new FormData(event.currentTarget);
+          console.log({
+            email: data.get('email'),
+            password: data.get('password'),
+          });
+        };
+    }
+            // if (validForm) {
+            //     axios.post("http://localhost:3030/login",{
+            //         email: email,
+            //         password: password
+            //     }).then((response) => {
+            //         console.log(response.data.status)
+            //         if(response.data.status === 'ok'){
+            //             localStorage.setItem('token', response.token)
+            //             //window.location = '/AdminPage'
+            //         } else {
+            //             console.log(response.data)
+            //             return ;
+            //         }
+            //         //console.log(response.data)
+            //     })
+            // }
+
 
     return(
         <div className = "container">
@@ -76,16 +127,19 @@ const FormComponent = ()=>{
                     <small style={{color:passwordColor}}>{errorPassword}</small>
                 </div>
                 <div className="form-group">
-                    <input type="radio" name="demo" value="Admin"/>ผู้ดูแลระบบ
-                    <input type="radio" name="demo" value="Research"/>นักวิจัย
+                    <input type="radio" name="roleCheck" value="Admin" onChange={(e) => {setRolecheck(e.target.value);}}/>ผู้ดูแลระบบ
+                    <input type="radio" name="roleCheck" value="Research"  onChange={(e) => {setRolecheck(e.target.value);}}/>นักวิจัย
                 </div>
-                <button type="submit" onClick={onLogin}>เข้าสู่ระบบ</button>
+                <button id="btn" onClick={onLogin}>เข้าสู่ระบบ</button>
             </form>
         </div>
-    )
-}
+        );
+    }
+
 
 export default FormComponent
+
+
 
 
 /* <div className = "container">
@@ -108,3 +162,35 @@ export default FormComponent
     <button type="submit">เข้าสู่ระบบ</button>
 </form>
 </div> */
+
+    // const login = () => {
+    //     axios.post("http://localhost:3030/login",{
+    //         email: email,
+    //         password: password
+    //     }).then((response) => {
+    //         console.log(response.data)
+    //     });
+    // };
+
+        // const handleSubmit = (event) => {
+    //     event.preventDefault();
+    //     const data = new FormData(event.currentTarget);
+    //     const jsonData = {
+    //         email: data.get('email'),
+    //         password: data.get('password'),
+    //     }
+
+    //     fetch('https://localhost:3030/login', {
+    //         method: 'POST', // or 'PUT'
+    //         headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(jsonData),
+    //     })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //         console.log('Success:', data);
+    //     })
+    //     .catch((error) => {
+    //         console.error('Error:', error);
+    //     });
