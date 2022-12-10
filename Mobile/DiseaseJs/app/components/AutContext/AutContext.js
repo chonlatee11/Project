@@ -6,7 +6,7 @@ import axios from 'axios';
 export const AuthContex = createContext();
 
 // const baseUrl = 'http://192.168.1.22:3030/login';
-const baseUrl = 'https://www.melivecode.com/api/login'
+const baseUrl = 'https://www.melivecode.com/api/login';
 
 export const AuthProvider = ({children}) => {
   const [isLoading, setisLoading] = useState(false);
@@ -14,22 +14,24 @@ export const AuthProvider = ({children}) => {
   const [userInfo, setUserInfo] = useState(null);
 
   const Login = async (userName, passWord) => {
-
     setisLoading(true);
-    const response = await axios.post(`${baseUrl}`, {
+    const response = await axios
+      .post(`${baseUrl}`, {
         username: 'karn.yong@melivecode.com',
-        password: 'melivecode'
-    }).then((response) => {
+        password: 'melivecode',
+      })
+      .then(response => {
         let userInfo = response.data;
         setUserInfo(userInfo.user);
         setUserToken(userInfo.accessToken);
         AsyncStorage.setItem('userToken', userInfo.accessToken);
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo.user));
         // console.log(userInfo.accessToken);
-    }).catch((error) => {
+      })
+      .catch(error => {
         Alert.alert('เกิดข้อผิดพลาด', 'กรุณาลองใหม่อีกครั้ง');
-        console.log(error)
-    })
+        console.log(error);
+      });
     setisLoading(false);
   };
 
@@ -62,7 +64,8 @@ export const AuthProvider = ({children}) => {
   }, []);
 
   return (
-    <AuthContex.Provider value={{Login, Logout, userToken, isLoading, userInfo}}>
+    <AuthContex.Provider
+      value={{Login, Logout, userToken, isLoading, userInfo}}>
       {children}
     </AuthContex.Provider>
   );

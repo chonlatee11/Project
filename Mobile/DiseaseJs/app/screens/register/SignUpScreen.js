@@ -6,39 +6,55 @@ import {useNavigation} from '@react-navigation/core';
 import {useForm} from 'react-hook-form';
 import axios from 'axios';
 
-const baseUrl = 'http://192.168.1.22:3030/register'
+const baseUrl = 'http://192.168.1.22:3030/register';
 
 const SignUpScreen = () => {
-  const {control, handleSubmit, formState: {errors}, watch} = useForm(
-    {defaultValues: {username: '', password: '', repeatPassword: '', fname: '', lname: '', phoneNumber: '', address: ''}},
-  );
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+    watch,
+  } = useForm({
+    defaultValues: {
+      username: '',
+      password: '',
+      repeatPassword: '',
+      fname: '',
+      lname: '',
+      phoneNumber: '',
+      address: '',
+    },
+  });
   const [isLoding, setIsLoding] = useState(false);
   const navigation = useNavigation();
   const onSignInPress = () => {
     navigation.navigate('SignIn');
   };
 
-  const onRegisterPress = async (data) => {
+  const onRegisterPress = async data => {
     if (isLoding) return;
     setIsLoding(true);
-    const res = await axios.post(`${baseUrl}`, {
-      userName: data.username,
-      passWord: data.password,
-      fName: data.fname,
-      lName: data.lname,
-      phoneNumber: data.phoneNumber,
-      address: data.address,
-    }).then((response) => {
-      console.log(response.status);
-      if (response.status === 200) {
-        Alert.alert('สมัครสมาชิกสำเร็จ', 'กรุณาเข้าสู่ระบบ');
-        navigation.navigate('SignIn');
-      }
-    }).catch((error) => {
-      Alert.alert('เกิดข้อผิดพลาด', 'กรุณาลองใหม่อีกครั้ง');
-      console.log(error); 
-      return;
-    })
+    const res = await axios
+      .post(`${baseUrl}`, {
+        userName: data.username,
+        passWord: data.password,
+        fName: data.fname,
+        lName: data.lname,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+      })
+      .then(response => {
+        console.log(response.status);
+        if (response.status === 200) {
+          Alert.alert('สมัครสมาชิกสำเร็จ', 'กรุณาเข้าสู่ระบบ');
+          navigation.navigate('SignIn');
+        }
+      })
+      .catch(error => {
+        Alert.alert('เกิดข้อผิดพลาด', 'กรุณาลองใหม่อีกครั้ง');
+        console.log(error);
+        return;
+      });
     setIsLoding(false);
   };
 
@@ -61,7 +77,7 @@ const SignUpScreen = () => {
           placeholder="ชื่อผู้ใช้งาน"
           rules={{required: 'กรุณากรอกชื่อผู้ใช้งาน'}}
         />
-        
+
         <CustomInput
           name={'password'}
           control={control}
@@ -75,7 +91,8 @@ const SignUpScreen = () => {
           placeholder="ยืนยันรหัสผ่าน"
           secureTextEntry
           rules={{
-            validate: value => value === watch('password') || 'รหัสผ่านไม่ตรงกัน',
+            validate: value =>
+              value === watch('password') || 'รหัสผ่านไม่ตรงกัน',
           }}
         />
 
@@ -107,7 +124,10 @@ const SignUpScreen = () => {
           rules={{required: 'กรุณากรอกที่อยู่'}}
         />
 
-        <CustomButton text={"สมัครใช้งาน"} onPress={handleSubmit(onRegisterPress)} />
+        <CustomButton
+          text={'สมัครใช้งาน'}
+          onPress={handleSubmit(onRegisterPress)}
+        />
 
         {/* <Text style={styles.text}>
           By registering, you confirm that you accept our{' '}
