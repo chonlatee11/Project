@@ -1,76 +1,113 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import {AuthContex} from '../../components/AutContext/AutContext';
+import axios from 'axios';
 import {
   Avatar,
   Title,
   Caption,
   Text,
-  TouchableRipple,
+  Divider,
   DataTable,
 } from 'react-native-paper';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+const baseUrl = 'https://jsonplaceholder.typicode.com/photos?_limit=10';
+
 const ProfileScreen = () => {
   const {userInfo} = useContext(AuthContex);
-  console.log(userInfo);
+  let [diseaseData, setDiseaseData] = useState([]);
+
+  const getDiseaseData = async () => {
+    const response = await axios
+      .get(baseUrl)
+      .then(response => {
+        setDiseaseData(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getDiseaseData();
+  }, []);
+
+  // console.log(userInfo);
+  console.log(diseaseData);
+
   return (
-    <View>
-      <View style={styles.userInfoSection}>
-        <View style={{flexDirection: 'row', marginTop: 15}}>
-          <Avatar.Image
-            source={{
-              uri: userInfo.avatar,
-            }}
-            size={80}
-          />
-          <View style={{marginLeft: 20}}>
-            <Title
-              style={[
-                styles.title,
-                {
-                  marginTop: 15,
-                  marginBottom: 5,
-                },
-              ]}>
-              ยินดีต้อนรับ
-            </Title>
-            <Caption style={styles.caption}>
-              {userInfo.fname} {userInfo.lname}
-            </Caption>
+    <ScrollView>
+      <View>
+        <View style={styles.userInfoSection}>
+          <View style={{flexDirection: 'row', marginTop: 15}}>
+            <Avatar.Image
+              source={{
+                uri: userInfo.avatar,
+              }}
+              size={80}
+            />
+            <View style={{marginLeft: 20}}>
+              <Title
+                style={[
+                  styles.title,
+                  {
+                    marginTop: 15,
+                    marginBottom: 5,
+                  },
+                ]}>
+                ยินดีต้อนรับ
+              </Title>
+              <Caption style={styles.caption}>
+                {userInfo.fname} {userInfo.lname}
+              </Caption>
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.userInfoSection}>
-        <View style={styles.row}>
-          <MaterialCommunityIcons
-            name="map-marker-radius"
-            color="#777777"
-            size={20}
-          />
-          <Text style={{color: '#777777', marginLeft: 20}}>Kolkata, India</Text>
+        <View style={styles.userInfoSection}>
+          <View style={styles.row}>
+            <MaterialCommunityIcons
+              name="map-marker-radius"
+              color="#777777"
+              size={20}
+            />
+            <Text style={{color: '#777777', marginLeft: 20}}>
+              Kolkata, India
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <MaterialCommunityIcons name="phone" color="#777777" size={20} />
+            <Text style={{color: '#777777', marginLeft: 20}}>
+              +91-900000009
+            </Text>
+          </View>
         </View>
-        <View style={styles.row}>
-          <MaterialCommunityIcons name="phone" color="#777777" size={20} />
-          <Text style={{color: '#777777', marginLeft: 20}}>+91-900000009</Text>
-        </View>
-      </View>
 
-      <View style={styles.horizonRule} />
+        {/* <View style={styles.horizonRule} /> */}
 
-      <View>
-        <ScrollView>
+        <View>
           <DataTable style={styles.userInfoSection}>
-            <DataTable.Row>
-              <DataTable.Cell>16 มิถุนายน 2565</DataTable.Cell>
-              <DataTable.Cell>โรคใบเหลือง</DataTable.Cell>
-            </DataTable.Row>
+            <DataTable.Header>
+              <DataTable.Title>ประวัติการรายงานโรค</DataTable.Title>
+            </DataTable.Header>
+            {diseaseData.map(diseaseData => {
+              return (
+                <DataTable.Row
+                  key={diseaseData.id}
+                  onPress={() => {
+                    console.log(`selected account ${diseaseData.id}`);
+                  }}>
+                  <DataTable.Cell>{diseaseData.id}</DataTable.Cell>
+                  <DataTable.Cell>{diseaseData.title}</DataTable.Cell>
+                </DataTable.Row>
+              );
+            })}
           </DataTable>
-        </ScrollView>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
