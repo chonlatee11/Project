@@ -10,7 +10,7 @@ const CardItem = ({item}) => {
     const [readMore, setReadMore] = useState(false);
 
     return (
-        <Card>
+        <Card style={styles.CardStyle}>
             <Card.Cover source={{ uri: item.url }} />
             <Card.Content>
                 <Card.Title title={item.title} />
@@ -48,16 +48,7 @@ const DiseaseScreen = () => {
         data={diseaseData}
         keyExtractor={(item, index) => item.id + index.toString()}
         renderItem={({item}) => (
-            <Card>
-                <Card.Cover source={{ uri: item.url }} />
-                <Card.Content>
-                    <Card.Title title={item.title} />
-                    <Paragraph>{item.title}</Paragraph>
-                </Card.Content>
-                <Card.Actions>
-                    <Button>อ่านเพิ่มเติม</Button>
-                </Card.Actions>
-            </Card>
+            <CardItem item={item} />
         )}
         />
         </View>
@@ -69,7 +60,12 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+    CardStyle: {
+        marginTop: 10,
+        marginHorizontal: 10,
+        borderRadius: 10,
+    },
 });
 
 export default DiseaseScreen;
