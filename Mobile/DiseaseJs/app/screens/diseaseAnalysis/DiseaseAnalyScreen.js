@@ -38,7 +38,8 @@ const DiseaseAnalyScreen = () => {
           width: 300,
           height: 300,
           cropping: true,
-          compressImageQuality: 0.7
+          compressImageQuality: 0.7,
+          includeBase64: true
         }).then(image => {
           console.log(image);
           console.log(image.data);
@@ -81,7 +82,7 @@ const DiseaseAnalyScreen = () => {
           </TouchableOpacity>
             
         <TouchableOpacity style={styles.button} >
-              <Text style={styles.buttonText} onPress={LoadModel}>วิเคราะห์โรคอ้อย</Text>
+              <Text style={styles.buttonText} >วิเคราะห์โรคอ้อย</Text>
           </TouchableOpacity>
         
           </View>
