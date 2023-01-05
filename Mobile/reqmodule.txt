@@ -1,0 +1,14 @@
+@react-native-async-storage/async-storage
+@react-navigation/bottom-tabs
+@react-navigation/material-bottom-tabs
+@react-navigation/native
+@react-navigation/native-stack
+axios
+react-hook-form
+react-native-gesture-handler
+react-native-image-crop-picker
+react-native-safe-area-context
+react-native-screens
+react-native-vector-icons
+
+npx react-native run-android
