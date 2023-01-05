@@ -84,6 +84,25 @@ app.post('/login', jsonParser,  function (req, res, next) {
 		});
 	})
 
+app.post('/disease', jsonParser,  function (req, res, next) {
+	poolCluster.getConnection(function (err, connection) {
+		if (err) {
+		console.log(err);
+		} else {
+		connection.query("SELECT * FROM Disease WHERE name = ?;",
+		[req.body.name], function (err, data){
+			if (err) {
+				res.json({err})
+			} else {
+				res.json({data})
+				// connection.end();
+				console.log(data);
+				connection.release();
+			  }
+			});
+		  }
+		});
+	  })
 
 // app.post('/inserttable', jsonParser,  function (req, res, next) {
 //   poolCluster.getConnection(function (err, connection) {
