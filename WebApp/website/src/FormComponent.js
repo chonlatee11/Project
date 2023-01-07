@@ -46,41 +46,9 @@ const FormComponent = ()=>{
             setPasswordColor('red')
             setValidForm(false)
         }
-        if(roleCheck === 'Admin'){
-            axios.post("http://localhost:3030/loginADMIN",{
-                email: email,
-                password: password
-            }).then((response) => {
-                console.log(response.data.status)
-                if(response.data.status === 'ok'){
-                    localStorage.setItem('token', response.token)
-                    window.location = '/AdminPage'
-                } else {
-                    console.log(response.data)
-                    return ;
-                }
-                //console.log(response.data)
-            })
-        }
-        if(roleCheck === 'Research'){
-            axios.post("http://localhost:3030/loginRESEARCH",{
-                email: email,
-                password: password
-            }).then((response) => {
-                console.log(response.data.status)
-                if(response.data.status === 'ok'){
-                    localStorage.setItem('token', response.token)
-                    //window.location = '/AdminPage'
-                } else {
-                    console.log(response.data)
-                    return ;
-                }
-                console.log(response.data)
-            })
-        }
-
     }
-        function onLogin() {
+
+    function onLogin() {
         const handleSubmit = (event) => {
           event.preventDefault();
           const data = new FormData(event.currentTarget);
@@ -89,7 +57,42 @@ const FormComponent = ()=>{
             password: data.get('password'),
           });
         };
+    if(roleCheck === 'Admin'){
+        axios.post("http://localhost:3030/loginADMIN",{
+            email: email,
+            password: password
+        }).then((response) => {
+            console.log(response.data.status)
+            if(response.data.status === 'ok'){
+                alert('login success')
+                localStorage.setItem('token', response.data.token)
+                window.location = '/AdminPage'
+            } else {
+                alert('login fail')
+                console.log(response.data)
+                return ;
+            }
+            //console.log(response.data)
+        })
+    }else if(roleCheck === 'Research'){
+        axios.post("http://localhost:3030/loginRESEARCH",{
+            email: email,
+            password: password
+        }).then((response) => {
+            console.log(response.data.status)
+            if(response.data.status === 'ok'){
+                alert('login success')
+                localStorage.setItem('token', response.data.token)
+                window.location = '/ResearchPage'
+            } else {
+                alert('login fail')
+                console.log(response.data)
+                return ;
+            }
+            console.log(response.data)
+        })
     }
+}
             // if (validForm) {
             //     axios.post("http://localhost:3030/login",{
             //         email: email,
@@ -194,3 +197,43 @@ export default FormComponent
     //     .catch((error) => {
     //         console.error('Error:', error);
     //     });
+
+
+
+
+
+
+
+
+
+
+/* function onLogin() {
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      console.log({
+        email: data.get('email'),
+        password: data.get('password'),
+      });
+}
+}
+if(roleCheck === Admin){
+    fetch('https://localhost:3030/loginADMIN', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if(data.status == 'ok'){
+                alert('login success')
+            }else{
+                alert('login fail')
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }; */

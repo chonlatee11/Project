@@ -4,7 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AdminPage from './AdminPage.js'
+import AdminPage from './AdminPage'
+import ResearchPage from './ResearchPage'
 
 
 
@@ -12,8 +13,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Routes>
-      <Route path='/' element={<App/>} />
+      <Route path='/login' element={<App/>} />
       <Route path='/AdminPage' element={<AdminPage/>} />
+      <Route path='/ResearchPage' element={<ResearchPage/>} />
     </Routes>
   </BrowserRouter>
 );

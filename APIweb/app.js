@@ -33,17 +33,17 @@ app.post('/loginADMIN', jsonParser,  function (req, res, next) {
         console.log(err);
         }else {
             connection.query("SELECT * FROM Admin WHERE email = ?", 
-            [req.body.email, req.body.password], function (err, rows) {
+            [req.body.email], function (err, Admin, fields) {
                 if (err) {
                     res.json({err})
                 } else {
-                    if (rows.length == 0) {
+                    if (Admin.length == 0) {
                     res.json({data: "Not found"})
                     connection.release();
                     }
-                    bcrypt.compare(req.body.password, rows[0].password, function(err,isLogin) {
+                    bcrypt.compare(req.body.password, Admin[0].password, function(err,isLogin) {
                         if(isLogin){
-                            var token = jwt.sign({ email: rows[0].email}, secret, { expiresIn: '1h' });
+                            var token = jwt.sign({ email: Admin[0].email}, secret, { expiresIn: '1h' });
                             res.json({status:'ok',message: 'login success', token})
                         } else {
                             res.json({status:'error',message: 'login fail'})
@@ -62,17 +62,17 @@ app.post('/loginRESEARCH', jsonParser,  function (req, res, next) {
         console.log(err);
         }else {
             connection.query("SELECT * FROM Researcher WHERE email = ?", 
-            [req.body.email, req.body.password], function (err, rows) {
+            [req.body.email, req.body.password], function (err, Admin) {
                 if (err) {
                     res.json({err})
                 } else {
-                    if (rows.length == 0) {
+                    if (Admin.length == 0) {
                     res.json({data: "Not found"})
                     connection.release();
                     }
-                    bcrypt.compare(req.body.password, rows[0].password, function(err,isLogin) {
+                    bcrypt.compare(req.body.password, Admin[0].password, function(err,isLogin) {
                         if(isLogin){
-                            var token = jwt.sign({ email: rows[0].email}, secret, { expiresIn: '1h' });
+                            var token = jwt.sign({email: Admin[0].email}, secret, { expiresIn: '1h' });
                             res.json({status:'ok',message: 'login success', token})
                         } else {
                             res.json({status:'error',message: 'login fail'})
@@ -83,6 +83,7 @@ app.post('/loginRESEARCH', jsonParser,  function (req, res, next) {
         }
     });
 })
+
 
 app.post('/authen', jsonParser,  function (req, res, next) {
     try{
