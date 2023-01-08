@@ -13,6 +13,7 @@ app.use(cors());
 // Use the express-fileupload middleware
 app.use(fileUpload());
 var mysql = require("mysql");
+const { url } = require("inspector");
 
 var poolCluster = mysql.createPoolCluster();
 poolCluster.add("node0", {
@@ -102,28 +103,29 @@ app.post("/login", jsonParser, function (req, res, next) {
   });
 });
 
-app.post("/disease", jsonParser, function (req, res, next) {
+// for show resualt
+app.post("/diseaseresualt", jsonParser, function (req, res, next) {
   poolCluster.getConnection(function (err, connection) {
-	//   let disease = new disease({
-	// 	DiseaseID: '',
-	// 	DiseaseName: '',  //update this
-	// 	InfoDisease: '',
-	// 	ProtectInfo: '',
-	// 	ImageName: '',
-  	// })
     if (err) {
       console.log(err);
     } else {
       connection.query(
-        "SELECT * FROM Disease WHERE DiseaseName = ?;",
+        "SELECT * FROM Disease WHERE DiseaseNameEng = ?;",
         [req.body.name],
         function (err, data) {
           if (err) {
             res.json({ err });
           } else {
-            res.json({ data: data });
+            const DiseaseData = [{
+                DiseaseID: data[0].DiseaseID,
+                DiseaseName: data[0].DiseaseName,  //update this
+                InfoDisease: data[0].InfoDisease,
+                ProtectInfo: data[0].ProtectInfo,
+                ImageUrl: 'http://127.0.0.1:3030/image/' + data[0].ImageName,
+                DiseaseNameEng: data[0].DiseaseNameEng,
+            }]
+            res.json({DiseaseData});
             // connection.end();
-            console.log(data[0].DiseaseID);
             connection.release();
           }
         }
@@ -132,7 +134,33 @@ app.post("/disease", jsonParser, function (req, res, next) {
   });
 });
 
-app.post("/upload", function (req, res) {
+app.get("/disease", jsonParser, function (req, res, next) {
+  poolCluster.getConnection(function (err, connection) {
+    if (err) {
+      console.log(err);
+    } else {
+      connection.query(
+        "SELECT * FROM Disease",
+        [req.body.name],
+        function (err, data) {
+          if (err) {
+            res.json({ err });
+          } else {
+            console.log(data.length);
+            for (let i = 0; i < data.length; i++) {
+              data[i].ImageUrl = 'http://127.0.0.1:3030/image/' + data[i].ImageName
+            }
+            res.json({data});
+            // connection.end();
+            connection.release();
+          }
+        }
+      );
+    }
+  });
+});
+
+app.post("/uploadImage", function (req, res) {
   let sampleFile;
   let uploadPath;
 
@@ -142,6 +170,7 @@ app.post("/upload", function (req, res) {
 
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
   sampleFile = req.files;
+  console.log(sampleFile);
   console.log(sampleFile.file.name);
   uploadPath = __dirname + "/image/" + sampleFile.file.name;
   console.log(uploadPath);
@@ -153,6 +182,7 @@ app.post("/upload", function (req, res) {
   });
 });
 
+//for get image url
 app.get('/image/:filename', (req, res) => {
 	const filePath = path.join(__dirname, '/image/', req.params.filename);
 	console.log(filePath);
@@ -160,7 +190,6 @@ app.get('/image/:filename', (req, res) => {
   
 	fs.readFile(filePath, (err, data) => {
 	  if (err) throw err;
-  
 	  res.writeHead(200, {'Content-Type': fileType});
 	  res.end(data);
 	});

@@ -40,7 +40,7 @@ async def read_main():
 
 #     return prediction
 
-@app.post("/upload")
+@app.post("/predict")
 async def upload(file: bytes = File(...)):
     # do something with the file data
     image = (BytesIO(file))
