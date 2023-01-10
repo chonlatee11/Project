@@ -88,6 +88,7 @@ app.post('/loginRESEARCH', jsonParser,  function (req, res, next) {
 app.post('/authen', jsonParser,  function (req, res, next) {
     try{
         const token = req.headers.authorization.split(' ')[1]
+        console.log('token',token)
         var decoded = jwt.verify(token, secret);
         res.json({status: 'ok', decoded})
     }catch(err){

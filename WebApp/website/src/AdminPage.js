@@ -4,9 +4,9 @@ import axios from 'axios'
 function DashboardAdmin(){
     useEffect(() => {
         const token = localStorage.getItem('token')
-        axios.post("http://localhost:3030/authen",{
+        axios.post("http://localhost:3030/authen",{},{
         headers:{
-            'Authorization': 'Bearer '+ token,
+            'authorization': 'Bearer '+ token,
         }
         }).then((response) => {
             console.log(response.data.status)
@@ -14,7 +14,7 @@ function DashboardAdmin(){
                 alert('authen success')
             } else {
                 alert('authen fail')
-                //window.location = './login'
+                window.location = '/'
             }
             console.log(response.data)
         })
