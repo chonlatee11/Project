@@ -10,7 +10,9 @@ IMAGE_SHAPE = (128, 128)
 
 #load model
 def load_model():
-    myModel = "/model/model"
+    myModel = "/model/model/"
+    # myModel = ('/model/model')
+    print(myModel)
     classifier_model = myModel
     classifier = tf.keras.Sequential([
         hub.KerasLayer(classifier_model, input_shape=IMAGE_SHAPE + (3,))
