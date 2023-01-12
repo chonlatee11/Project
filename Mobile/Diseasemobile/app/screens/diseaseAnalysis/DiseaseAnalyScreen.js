@@ -15,59 +15,115 @@ import {
 import {Button} from 'react-native-paper';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios from 'axios';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const DiseaseAnalyScreen = () => {
   const {height} = useWindowDimensions();
-  const [image, setImage] = useState();
-  const [resualtPredict, setResualtPredict] = useState();
-
+  const [image, setImage] = useState(null);
+  let [resualtPredict, setResualtPredict] = useState(null);
+  let [imageShow, setImageShow] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
+  let [viewResault, setViewResault] = useState(false);
+  const [diseaseData, setDiseaseData] = useState(null);
 
+  const diseaseResaultUrl = 'http://192.168.1.22:3030/diseaseresualt'
   const predictUrl = 'http://192.168.1.22:8000/predict';
-  const diseaUrl = 'http://192.168.1.22:3030/diseaseresualt';
-
-  const uploadImage = async imagedata => {
-    let formData = new FormData();
-    formData.append('file', {
-      uri: imagedata.path,
-      type: imagedata.mime,
-      name: imagedata.modificationDate,
-    });
-    await axios
-      .post(predictUrl, formData, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then(response => {
-        // console.log(response.data);
-        // console.log(response.json());
-        // console.log(response.msg);
-        setResualtPredict(response.data);
-        console.log('response : ' + resualtPredict);
-      })
-      .catch(error => {
-        console.log(error);
+  
+  // const predictImage  = (imageData) => {
+  //   if (imageData == null) {
+  //     console.log("image is null :"+imageData);
+  //     return;
+  //   }else{
+  //     console.log("image is not null :"+imageData);
+  //     let formData = new FormData();
+  //   formData.append('file', {
+  //     uri: imageData.path,
+  //     type: imageData.mime,
+  //     name: imageData.modificationDate,
+  //   });
+  //   axios
+  //     .post(predictUrl, formData, {
+  //       method: 'POST',
+  //       body: formData,
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //     })
+  //     .then(response => {
+  //       console.log(response.data);
+  //       // console.log(response.json());
+  //       // console.log(response.msg);
+  //       setResualtPredict(response.data);
+  //       console.log("resault predict set = "+ resualtPredict)
+  //       // console.log('response : ' + resualtPredict.status_code);
+  //       // console.log('response : ' + resualtPredict.predicted_label);
+  //       // console.log('response : ' + resualtPredict.probability);
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     });
+  //   }
+  // }; 
+  const predictImage = async (image) => {
+      if (image == null) {
+        console.log("image is null :"+ image);
+        return;
+      }else{
+        console.log("image is not null :" + image);
+        let formData = new FormData();
+      formData.append('file', {
+        uri: image.path,
+        type: image.mime,
+        name: image.modificationDate,
       });
-  };
+      await axios
+        .post(predictUrl, formData, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then(response => {
+          console.log(response.data);
+          let resualt = response.data;
+          setResualtPrediction(resualt);
+          // console.log(response.json());
+          // console.log(response.msg);
+          // setResualtPredict(response.data);
+          // console.log("resault predict set = "+ resualtPredict)
+          // console.log('response : ' + resualtPredict.status_code);
+          // console.log('response : ' + resualtPredict.predicted_label);
+          // console.log('response : ' + resualtPredict.probability);
+          
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      }
+    };
 
-  const checkResualt = async () => {
-    console.log(resualtPredict);
-    await axios
-      .post(diseaUrl, {
-        name: resualtPredict.predicted_label,
+  const choosePhotoFromLibrary = () => {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 300,
+        cropping: true,
+        compressImageQuality: 0.7,
+        includeBase64: false,
       })
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+        .then(image => {
+          setImageShow(image);
+          SetImage(image);
+          // console.log(image)
+          // setImageShow(image.path);
+        })
+        .catch(error => {
+          if (error.code === 'E_PICKER_CANCELLED') {
+            console.log('User cancelled image picker');
+            return false;
+          }
+        });
+    };
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
@@ -84,9 +140,18 @@ const DiseaseAnalyScreen = () => {
     })
       .then(image => {
         // console.log(image);
-        const imageData = image;
-        setImage(imageData.path);
-        uploadImage(imageData);
+        setImageShow(image);
+        SetImage(image);
+        // console.log(imageShow)
+        // setImage(imageData.path);
+        // setImageShow(image.path);
+        // setImage(imageData);
+        // predictImage();
+        // const resualtPredict = predictImage(imageData)
+        // console.log(resualtPredict)
+        // console.log("resault predict set = "+ resualtPredict)
+        // setResualtPredict(predictImage(imageData))
+        // console.log("resault predict set = "+ resualtPredict)
         //this.bs.current.snapTo(1);
       })
       .catch(error => {
@@ -97,48 +162,158 @@ const DiseaseAnalyScreen = () => {
       });
   };
 
-  const choosePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 300,
-      cropping: true,
-      compressImageQuality: 0.7,
-      includeBase64: false,
-    })
-      .then(image => {
-        const imageData = image;
-        setImage(image.path);
-        uploadImage(imageData);
-        //console.log(image.path);
-      })
-      .catch(error => {
-        if (error.code === 'E_PICKER_CANCELLED') {
-          console.log('User cancelled image picker');
-          return false;
-        }
-      });
-  };
+  useEffect(() => {
+    if (imageShow !== null) {
+    setImage(imageShow);
+    }
+  }, [image]);
+
+  const setResualtPrediction = (resualt) => {
+    setResualtPredict(resualt);
+  }
+
+  const SetImage = (image) => {
+    console.log("SetImage is called")
+    setImage(image);
+    predictImage(image);
+  }
+
+  const setDiseaseDatafetch = (diseaseData) => {
+    setDiseaseData(diseaseData);
+  }
+  
   bs = React.createRef();
+
+  async function InFoDisease () {
+    console.log("InFoDisease is called")
+    if (resualtPredict == null) {
+      console.log("resualtPredict is null :"+ resualtPredict);
+      return 
+    }
+    else {
+      console.log("resualtPredict is not null :"+ resualtPredict);
+      // console.log("diseaseData :" + diseaseData)
+      await axios.post(diseaseResaultUrl, {
+        name: resualtPredict.predicted_label,
+      })
+      .then(function (response) {
+        // console.log(response.data.DiseaseData);
+        // setDiseaseData(response.data.DiseaseData);
+        setDiseaseDatafetch(response.data.DiseaseData);
+        // console.log (diseaseData)
+      })
+    }
+    
+  };
+
+  console.log("resualtPredict :"+ resualtPredict)
+  console.log("diseaseData :" + diseaseData)
+
+  const InFoDiseaseView = ({diseaseData}) => {
+    console.log(diseaseData)
+    if (diseaseData == null) {
+      return 
+    }
+    return (
+        <ScrollView  style={styles.ScrollView}>
+          {
+                    diseaseData == null ? <Text style={styles.buttonText}>ไม่มีข้อมูล</Text> :
+                    <Text style={styles.text}>ชื่อโรค : {diseaseData.DiseaseName} อาการ : {diseaseData.InfoDisease}</Text>
+          }
+      </ScrollView>
+    );
+  }
+  const ProtectDiseaseView = ({diseaseData}) => {
+    return (
+      <ScrollView  style={styles.ScrollView}>
+        {
+                    diseaseData == null ? <Text style={styles.buttonText}>ไม่มีข้อมูล</Text> :
+                    <Text style={styles.text}>คำแนะนำการป้องกันโรค : {diseaseData.ProtectInfo}</Text>
+        }
+    </ScrollView>
+    );
+  }
+
+  // const ViewResault = () => {
+  //   return (
+  //     <SafeAreaView style={styles.centeredView}>
+  //         <Modal
+  //           animationType="slide"
+  //           transparent={true}
+  //           visible={modalVisible}
+  //           onRequestClose={() => {
+  //             setModalVisible(!modalVisible);
+  //           }}>
+  //           <View style={styles.centeredView}>
+  //             <View style={styles.modalView}>
+  //               <SafeAreaView>
+
+  //                 <View style={styles.containerImageModal}>
+  //                 {
+  //                   diseaseData == null ? <View style={styles.Image}></View> :
+  //                   <Image
+  //                     source={{uri: diseaseData.ImageUrl}}
+  //                     // style={{height: 100, width: 100}}
+  //                     style={styles.Image}
+  //                 />
+  //                 }
+  //                 </View>
+                  
+  //                 <View style={styles.containerResaultText}>
+  //                 {
+  //                   resualtPredict == null ? <Text style={styles.buttonText}>ไม่มีข้อมูล</Text> :
+  //                   <Text style={styles.buttonText}>มีโอกาสเป็นโรค {resualtPredict.probability} %</Text>
+  //                 }
+                    
+  //                 </View>
+
+  //                 <View style={styles.containerButtonResault}>
+  //                     <Button style={styles.Resaultbutton} onPress={() => setViewResault(true)}>ข้อมูลโรค</Button>
+  //                     <Button style={styles.Resaultbutton} onPress={() => setViewResault(false)}>คำแนะนำการป้องกันโรค</Button>
+  //                 </View>
+
+  //               </SafeAreaView >
+
+  //               <SafeAreaView style={styles.ScrollContainer}>
+  //               {viewResault == true ? <InFoDiseaseView diseaseData={diseaseData}/> : <ProtectDiseaseView diseaseData={diseaseData}/>}
+  //               </SafeAreaView>
+  //               <Pressable
+  //                 style={[styles.button, styles.buttonClose]}
+  //                 onPress={() => setModalVisible(!modalVisible)}>
+  //                 <Text style={styles.textStyle}>Hide Modal</Text>
+  //               </Pressable>
+  //             </View>
+  //           </View>
+  //         </Modal>
+  //       </SafeAreaView>
+  //   );
+  // }
+
+  
 
   return (
     <View style={styles.container}>
 
       <View style={styles.containerImage}>
-      <Image
-        source={{uri: image}}
-        // style={{height: 100, width: 100}}
-        style={styles.Image}
-      />
+        {
+        imageShow == null ? <View style={styles.Image}></View> :
+        <Image
+          source={{uri: imageShow.path}}
+          // style={{height: 100, width: 100}}
+          style={styles.Image}
+        />
+        }
       </View>
       
       <View style={styles.containerButton}>
+
         <TouchableOpacity>
           <Button
             style={styles.button}
             mode={'Contained-tonal button'}
             buttonColor={'blue'}
             textColor={'white'}
-            onPress={() => setModalVisible(true)}>
+            onPress={takePhotoFromCamera}>
             ถ่ายรูปเพื่อวิเคราะห์โรคอ้อย
           </Button>
         </TouchableOpacity>
@@ -156,16 +331,17 @@ const DiseaseAnalyScreen = () => {
 
         <TouchableOpacity>
           <Button
+            disabled={resualtPredict == null ? true : false}
             style={styles.button}
             mode={'Contained-tonal button'}
             buttonColor={'blue'}
             textColor={'white'}
-            onPress={() => setModalVisible(true)}>
+            onPress={() => {setModalVisible(true); InFoDisease();}}>
             ดูผลลัพธ์
           </Button>
         </TouchableOpacity>
-
-        <SafeAreaView style={styles.centeredView}>
+      </View>
+      <SafeAreaView style={styles.centeredView}>
           <Modal
             animationType="slide"
             transparent={true}
@@ -178,51 +354,49 @@ const DiseaseAnalyScreen = () => {
                 <SafeAreaView>
 
                   <View style={styles.containerImageModal}>
-                  <Image
-                      source={{uri: image}}
+                  {
+                    diseaseData == null ? <View style={styles.Image}></View> :
+                    <Image
+                      source={{uri: diseaseData.ImageUrl}}
                       // style={{height: 100, width: 100}}
                       style={styles.Image}
-                    />
+                  />
+                  }
                   </View>
                   
                   <View style={styles.containerResaultText}>
-                    <Text style={styles.buttonText}>มีโอกาสเป็นโรค บลาๆๆ %</Text>
+                  {
+                    resualtPredict == null ? <Text style={styles.buttonText}>ไม่มีข้อมูล</Text> :
+                    <Text style={styles.buttonText}>มีโอกาสเป็นโรค {resualtPredict.probability} %</Text>
+                  }
+                    
                   </View>
 
                   <View style={styles.containerButtonResault}>
-                      <Button style={styles.Resaultbutton}>ข้อมูลโรค</Button>
-                      <Button style={styles.Resaultbutton}>คำแนะนำการป้องกันโรค</Button>
+                      <Button style={styles.Resaultbutton} onPress={() => setViewResault(true)}>ข้อมูลโรค</Button>
+                      <Button style={styles.Resaultbutton} onPress={() => setViewResault(false)}>คำแนะนำการป้องกันโรค</Button>
                   </View>
 
                 </SafeAreaView >
 
                 <SafeAreaView style={styles.ScrollContainer}>
-                <ScrollView style={styles.ScrollView}>
-                  <Text>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.awjofk;ajw;fjaw;jfaow;jo;fjawo;ajwo;jaw;ofj;awjofk
-          ;aowjf;ojawo;jf;oawjo;fj;;oawjf;ojaw;ojf;grayaw[pkg
-          a;wjog;oawjgo;awjg;aowjgfo;aw]a'pwkmfg'lakmwgokaow;'jkmgo;'k'apwkgp'awkgp'kaw
-          [awpkgp[awkg[kawa'pwkgp'apwkg'pawk'pgkp'aw]]]
-                  </Text>
-                </ScrollView>
+                {viewResault == true ? <InFoDiseaseView diseaseData={diseaseData}/> : <ProtectDiseaseView diseaseData={diseaseData}/>}
                 </SafeAreaView>
-                
                 <Pressable
                   style={[styles.button, styles.buttonClose]}
                   onPress={() => setModalVisible(!modalVisible)}>
-                  <Text style={styles.textStyle}>Hide Modal</Text>
+                  <Text style={styles.textStyle}>รายงานการพบโรค</Text>
+                  <MaterialCommunityIcons name="send"  size={26} />
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}>
+                  <MaterialCommunityIcons name="close"  size={26} />
                 </Pressable>
               </View>
             </View>
           </Modal>
         </SafeAreaView>
-      </View>
     </View>
   );
 };

@@ -116,14 +116,14 @@ app.post("/diseaseresualt", jsonParser, function (req, res, next) {
           if (err) {
             res.json({ err });
           } else {
-            const DiseaseData = [{
+            const DiseaseData = {
                 DiseaseID: data[0].DiseaseID,
                 DiseaseName: data[0].DiseaseName,  //update this
                 InfoDisease: data[0].InfoDisease,
                 ProtectInfo: data[0].ProtectInfo,
-                ImageUrl: 'http://127.0.0.1:3030/image/' + data[0].ImageName,
+                ImageUrl: 'http://192.168.1.22:3030/image/' + data[0].ImageName,
                 DiseaseNameEng: data[0].DiseaseNameEng,
-            }]
+            }
             res.json({DiseaseData});
             // connection.end();
             connection.release();
